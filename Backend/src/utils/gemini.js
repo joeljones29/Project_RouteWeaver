@@ -41,8 +41,6 @@ async function getTouristAttractions(origin, destination, keywords) {
     };
   } catch (error) {
     console.error("Error generating content:", error);
-<<<<<<< HEAD
-<<<<<<< HEAD
     return { set1: [], set2: []};
   }
 }
@@ -698,18 +696,10 @@ Format the response as a JSON object with these categories as properties and bot
       totalCost: "Unknown",
       details: "An error occurred while generating the cost estimate."
     };
-=======
-    return { set1:, set2:};
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
-    return { set1:, set2:};
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
   }
 }
 
 function parseGeminiResponse(responseText) {
-<<<<<<< HEAD
-<<<<<<< HEAD
   const places = [];
   // Clean the response to ensure consistent formatting
   const cleanedResponse = responseText
@@ -918,75 +908,3 @@ Be as accurate as possible. For natural landmarks like hills, waterfalls, or lak
 }
 
 export { getTouristAttractions, getSuggest, getOptions, getCozy, getCost };
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-  const places =;
-  const lines = responseText.split('\n').filter(line => line.trim() !== '');
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].startsWith("- ")) {
-      const parts = lines[i].substring(2).split(" (");
-      if (parts.length >= 2) {
-        const name = parts[0].trim();
-        const remaining = parts.slice(1).join(" (");
-        const descriptionParts = remaining.split(") [");
-        if (descriptionParts.length === 2) {
-          const description = descriptionParts[0].trim() + ")";
-          const coordinatesPart = descriptionParts[1].trim();
-          if (coordinatesPart.endsWith("]")) {
-            const coordinatesStr = coordinatesPart.slice(0, -1).trim();
-            const [latitudeStr, longitudeStr] = coordinatesStr.split(",").map(s => s.trim());
-            const latitude = parseFloat(latitudeStr);
-            const longitude = parseFloat(longitudeStr);
-            if (!isNaN(latitude) && !isNaN(longitude)) {
-              places.push({ name, description, coordinates: { latitude, longitude } });
-            } else {
-              console.warn("Could not parse coordinates:", coordinatesStr, "for place:", name);
-            }
-          } else {
-            console.warn("Could not find closing bracket for coordinates for place:", name);
-          }
-        } else {
-          console.warn("Could not parse description and coordinates for place:", name);
-        }
-      } else {
-        console.warn("Could not split name and description/coordinates for line:", lines[i]);
-      }
-    }
-  }
-  return places;
-}
-
-// Example usage:
-const originCity = "Kochi";
-const destinationCity = "Trivandrum";
-const attractionKeywords = "viewpoint, historic places";
-
-getTouristAttractions(originCity, destinationCity, attractionKeywords)
-  .then(result => {
-    console.log("Set 1:");
-    if (result.set1 && result.set1.length > 0) {
-      result.set1.forEach((place, index) => {
-        console.log(`${index + 1}. ${place.name}: ${place.description} [${place.coordinates.latitude}, ${place.coordinates.longitude}]`);
-      });
-    } else {
-      console.log("No places found for Set 1.");
-    }
-
-    console.log("\nSet 2:");
-    if (result.set2 && result.set2.length > 0) {
-      result.set2.forEach((place, index) => {
-        console.log(`${index + 1}. ${place.name}: ${place.description} [${place.coordinates.latitude}, ${place.coordinates.longitude}]`);
-      });
-    } else {
-      console.log("No places found for Set 2.");
-    }
-  })
-  .catch(error => {
-    console.error("Error:", error);
-<<<<<<< HEAD
-  });
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
-  });
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f

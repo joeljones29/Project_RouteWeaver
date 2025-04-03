@@ -1,14 +1,6 @@
 import express from 'express';
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { getNearbyPlaces, getDistantPlaces, getRoutePlaces } from '../utils/options.js';
 import { getCost } from '../utils/gemini.js';
-=======
-import { getNearbyPlaces, getDistantPlaces } from '../utils/place.js';
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
-import { getNearbyPlaces, getDistantPlaces } from '../utils/place.js';
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 
 const travelRouter = express.Router();
 
@@ -19,12 +11,6 @@ const travelRouter = express.Router();
  * @param {string} lng - Longitude coordinate
  * @returns {Object} Nearby places object
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
-travelRouter.get('/nearby', getNearbyPlaces);
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 travelRouter.get('/nearby', async (req, res) => {
   try {
     const { lat, lng } = req.query;
@@ -57,10 +43,6 @@ travelRouter.get('/nearby', async (req, res) => {
     });
   }
 });
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 
 /**
  * Route to get distant tourist attractions (80km - 1000km)
@@ -69,9 +51,38 @@ travelRouter.get('/nearby', async (req, res) => {
  * @param {string} lng - Longitude coordinate
  * @returns {Object} Distant places object
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
-travelRouter.get('/distant', getDistantPlaces);
+travelRouter.get('/distant', async (req, res) => {
+  try {
+    const { lat, lng } = req.query;
+    
+    if (!lat || !lng) {
+      return res.status(400).json({ 
+        error: 'Missing latitude or longitude parameters' 
+      });
+    }
+    
+    const coords = {
+      lat: parseFloat(lat),
+      lng: parseFloat(lng)
+    };
+    
+    // Call the utility function from place.js
+    const result = await getDistantPlaces(coords, 8); // 8 results
+    
+    if (result.error) {
+      console.error(`Error in distant places: ${result.error}`);
+      return res.status(400).json({ error: result.error });
+    }
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Error in distant places route:', error);
+    res.status(500).json({ 
+      error: 'Server error while fetching distant places',
+      details: error.message 
+    });
+  }
+});
 
 /**
  * Route to get places along a route between origin and destination
@@ -118,42 +129,6 @@ travelRouter.post('/cost', async (req, res) => {
     return res.status(500).json({ 
       error: "Failed to estimate travel cost",
       totalCost: "Unknown"
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-travelRouter.get('/distant', async (req, res) => {
-  try {
-    const { lat, lng } = req.query;
-    
-    if (!lat || !lng) {
-      return res.status(400).json({ 
-        error: 'Missing latitude or longitude parameters' 
-      });
-    }
-    
-    const coords = {
-      lat: parseFloat(lat),
-      lng: parseFloat(lng)
-    };
-    
-    // Call the utility function from place.js
-    const result = await getDistantPlaces(coords, 8); // 8 results
-    
-    if (result.error) {
-      console.error(`Error in distant places: ${result.error}`);
-      return res.status(400).json({ error: result.error });
-    }
-    
-    res.json(result);
-  } catch (error) {
-    console.error('Error in distant places route:', error);
-    res.status(500).json({ 
-      error: 'Server error while fetching distant places',
-      details: error.message 
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
     });
   }
 });

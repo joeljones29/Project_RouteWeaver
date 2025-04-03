@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { FaUserCircle, FaSearch } from 'react-icons/fa';
-=======
 import { FaUserCircle } from 'react-icons/fa';
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
-import { FaUserCircle } from 'react-icons/fa';
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 import { IoLocationSharp } from 'react-icons/io5';
 import axios from 'axios';
 import '../design/travelpackage.css';
@@ -60,8 +52,6 @@ const TravelPackage = () => {
   const handleSearchInputFocus = () => {
     if (suggestions.length > 0) {
       setShowSuggestions(true);
-<<<<<<< HEAD
-<<<<<<< HEAD
     }
   };
 
@@ -306,8 +296,6 @@ const TravelPackage = () => {
           img.src = place.imageUrl;
         }
       });
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
     }
     
     // Preload images for distant places
@@ -318,8 +306,6 @@ const TravelPackage = () => {
           img.src = place.imageUrl;
         }
       });
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
     }
   }, [nearbyPlaces, distantPlaces]);
 
@@ -378,498 +364,6 @@ const TravelPackage = () => {
     navigate('/prebuilt');
   };
 
-  // Handle location input changes with OSRM autocomplete
-  useEffect(() => {
-    // Clear previous timeout to avoid multiple API calls
-    if (locationTimeoutRef.current) {
-      clearTimeout(locationTimeoutRef.current);
-    }
-
-    // Only make API call if there's something to search for
-    if (searchQuery.length > 2) {
-      locationTimeoutRef.current = setTimeout(async () => {
-        try {
-          const response = await axios.get(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`
-          );
-          setSuggestions(response.data);
-          setShowSuggestions(true);
-        } catch (error) {
-          console.error('Error fetching location suggestions:', error);
-        }
-      }, 500);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-
-    return () => {
-      if (locationTimeoutRef.current) {
-        clearTimeout(locationTimeoutRef.current);
-      }
-    };
-  }, [searchQuery]);
-
-  // Get user location from storage or geolocation
-  useEffect(() => {
-    const getUserCoordinates = async () => {
-      setLoading(true);
-      try {
-        // First try to get location from session storage
-        const storedLocation = sessionStorage.getItem("location");
-        
-        if (storedLocation) {
-          // Convert stored location (which is likely an address) to coordinates
-          const response = await axios.get(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedLocation)}&limit=1`
-          );
-          
-          if (response.data && response.data.length > 0) {
-            const coords = {
-              lat: parseFloat(response.data[0].lat),
-              lng: parseFloat(response.data[0].lon)
-            };
-            setUserCoords(coords);
-            setSearchQuery(storedLocation); // Set the search query to show the current location
-            fetchPlaces(coords);
-          } else {
-            throw new Error("Could not geocode stored location");
-          }
-        } else {
-          // If no stored location, try browser geolocation
-    if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              async (position) => {
-                const coords = {
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude
-                };
-                setUserCoords(coords);
-                
-                // Reverse geocode to get location name
-                try {
-                  const response = await axios.get(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&zoom=10`
-                  );
-                  if (response.data && response.data.display_name) {
-                    setSearchQuery(response.data.display_name);
-                    sessionStorage.setItem("location", response.data.display_name);
-                  }
-                } catch (err) {
-                  console.error("Error reverse geocoding:", err);
-                }
-                
-                fetchPlaces(coords);
-              },
-              (err) => {
-                console.error("Geolocation error:", err);
-                setError("Unable to get your location. Please enter a location in the search box.");
-                setLoading(false);
-              }
-            );
-          } else {
-            setError("Geolocation is not supported by your browser. Please enter a location in the search box.");
-            setLoading(false);
-          }
-        }
-      } catch (err) {
-        console.error("Error getting user coordinates:", err);
-        setError("Error determining your location. Please try again.");
-        setLoading(false);
-      }
-    };
-
-    getUserCoordinates();
-  }, []);
-
-  // Fetch places from backend with the coordinates
-  const fetchPlaces = async (coords) => {
-    try {
-      setLoading(true);
-      setError(null); // Clear any previous errors
-      
-      // Fetch nearby places (within 80km)
-      const nearbyResponse = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/travel/nearby`, {
-        params: {
-          lat: coords.lat,
-          lng: coords.lng
-        }
-      });
-      
-      if (nearbyResponse.data.error) {
-        console.error(`Error fetching nearby places: ${nearbyResponse.data.error}`);
-        setError(`Error fetching nearby places: ${nearbyResponse.data.error}`);
-        setNearbyPlaces([]);
-      } else if (nearbyResponse.data && nearbyResponse.data.places) {
-        setNearbyPlaces(nearbyResponse.data.places);
-      } else {
-        setNearbyPlaces([]);
-      }
-      
-      // Fetch distant places (80km-1000km)
-      const distantResponse = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/travel/distant`, {
-        params: {
-          lat: coords.lat,
-          lng: coords.lng
-        }
-      });
-      
-      if (distantResponse.data.error) {
-        console.error(`Error fetching distant places: ${distantResponse.data.error}`);
-        if (!nearbyResponse.data.error) { // Only set error if not already set
-          setError(`Error fetching distant places: ${distantResponse.data.error}`);
-        }
-        setDistantPlaces([]);
-      } else if (distantResponse.data && distantResponse.data.places) {
-        setDistantPlaces(distantResponse.data.places);
-      } else {
-        setDistantPlaces([]);
-      }
-      
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching places:", err);
-      setError(err.response?.data?.error || "Unable to fetch places. Please try again later.");
-      setNearbyPlaces([]);
-      setDistantPlaces([]);
-      setLoading(false);
-    }
-  };
-
-  const handleLocationSelect = (suggestion) => {
-    const locationName = suggestion.display_name;
-    setSearchQuery(locationName);
-    setShowSuggestions(false);
-    
-    const coords = {
-      lat: parseFloat(suggestion.lat),
-      lng: parseFloat(suggestion.lon)
-    };
-    
-    setUserCoords(coords);
-    sessionStorage.setItem("location", locationName);
-    fetchPlaces(coords);
-  };
-
-  const handleLocationSearch = async (e) => {
-    e.preventDefault();
-    
-    if (!searchQuery.trim()) return;
-    
-    try {
-      setLoading(true);
-      setShowSuggestions(false); // Hide suggestions when search is initiated
-      
-      // Geocode the search query to get coordinates
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
-      );
-      
-      if (response.data && response.data.length > 0) {
-        const coords = {
-          lat: parseFloat(response.data[0].lat),
-          lng: parseFloat(response.data[0].lon)
-        };
-        setUserCoords(coords);
-        fetchPlaces(coords);
-        
-        // Save to session storage
-        sessionStorage.setItem("location", searchQuery);
-      } else {
-        setError("Location not found. Please try a different search term.");
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("Error searching location:", err);
-      setError("Error searching for location. Please try again.");
-      setLoading(false);
-    }
-  };
-
-  // Get photo URL from photo reference
-  const getPhotoUrl = (photoRef) => {
-    if (photoRef && import.meta.env.VITE_GOOGLE_PLACES_API_KEY) {
-      return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${import.meta.env.VITE_GOOGLE_PLACES_API_KEY}`;
-    }
-    return fallbackImage;
-  };
-
-  // Click handler for document to hide suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const searchBox = document.querySelector('.search-box');
-      if (searchBox && !searchBox.contains(event.target)) {
-        setShowSuggestions(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-
-  // Handle Explore button click - stores data to sessionStorage and navigates to summary page
-  const handleExploreClick = (place) => {
-    // Store trip data in sessionStorage for the summary page to use
-    sessionStorage.setItem('packageTrip', JSON.stringify({
-      origin: searchQuery, // Current location
-      destination: place.name,
-      originCoords: userCoords,
-      destinationCoords: { lat: place.lat, lng: place.lng },
-      distance: place.distance
-    }));
-    
-    // Navigate to summary page with special parameter
-    navigate('/summary/packages');
-  };
-
-  // Handle location input changes with OSRM autocomplete
-  useEffect(() => {
-    // Clear previous timeout to avoid multiple API calls
-    if (locationTimeoutRef.current) {
-      clearTimeout(locationTimeoutRef.current);
-    }
-
-    // Only make API call if there's something to search for
-    if (searchQuery.length > 2) {
-      locationTimeoutRef.current = setTimeout(async () => {
-        try {
-          const response = await axios.get(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`
-          );
-          setSuggestions(response.data);
-          setShowSuggestions(true);
-        } catch (error) {
-          console.error('Error fetching location suggestions:', error);
-        }
-      }, 500);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-
-    return () => {
-      if (locationTimeoutRef.current) {
-        clearTimeout(locationTimeoutRef.current);
-      }
-    };
-  }, [searchQuery]);
-
-  // Get user location from storage or geolocation
-  useEffect(() => {
-    const getUserCoordinates = async () => {
-      setLoading(true);
-      try {
-        // First try to get location from session storage
-        const storedLocation = sessionStorage.getItem("location");
-        
-        if (storedLocation) {
-          // Convert stored location (which is likely an address) to coordinates
-          const response = await axios.get(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedLocation)}&limit=1`
-          );
-          
-          if (response.data && response.data.length > 0) {
-            const coords = {
-              lat: parseFloat(response.data[0].lat),
-              lng: parseFloat(response.data[0].lon)
-            };
-            setUserCoords(coords);
-            setSearchQuery(storedLocation); // Set the search query to show the current location
-            fetchPlaces(coords);
-          } else {
-            throw new Error("Could not geocode stored location");
-          }
-        } else {
-          // If no stored location, try browser geolocation
-    if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              async (position) => {
-                const coords = {
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude
-                };
-                setUserCoords(coords);
-                
-                // Reverse geocode to get location name
-                try {
-                  const response = await axios.get(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&zoom=10`
-                  );
-                  if (response.data && response.data.display_name) {
-                    setSearchQuery(response.data.display_name);
-                    sessionStorage.setItem("location", response.data.display_name);
-                  }
-                } catch (err) {
-                  console.error("Error reverse geocoding:", err);
-                }
-                
-                fetchPlaces(coords);
-              },
-              (err) => {
-                console.error("Geolocation error:", err);
-                setError("Unable to get your location. Please enter a location in the search box.");
-                setLoading(false);
-              }
-            );
-          } else {
-            setError("Geolocation is not supported by your browser. Please enter a location in the search box.");
-            setLoading(false);
-          }
-        }
-      } catch (err) {
-        console.error("Error getting user coordinates:", err);
-        setError("Error determining your location. Please try again.");
-        setLoading(false);
-      }
-    };
-
-    getUserCoordinates();
-  }, []);
-
-  // Fetch places from backend with the coordinates
-  const fetchPlaces = async (coords) => {
-    try {
-      setLoading(true);
-      setError(null); // Clear any previous errors
-      
-      // Fetch nearby places (within 80km)
-      const nearbyResponse = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/travel/nearby`, {
-        params: {
-          lat: coords.lat,
-          lng: coords.lng
-        }
-      });
-      
-      if (nearbyResponse.data.error) {
-        console.error(`Error fetching nearby places: ${nearbyResponse.data.error}`);
-        setError(`Error fetching nearby places: ${nearbyResponse.data.error}`);
-        setNearbyPlaces([]);
-      } else if (nearbyResponse.data && nearbyResponse.data.places) {
-        setNearbyPlaces(nearbyResponse.data.places);
-      } else {
-        setNearbyPlaces([]);
-      }
-      
-      // Fetch distant places (80km-1000km)
-      const distantResponse = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/travel/distant`, {
-        params: {
-          lat: coords.lat,
-          lng: coords.lng
-        }
-      });
-      
-      if (distantResponse.data.error) {
-        console.error(`Error fetching distant places: ${distantResponse.data.error}`);
-        if (!nearbyResponse.data.error) { // Only set error if not already set
-          setError(`Error fetching distant places: ${distantResponse.data.error}`);
-        }
-        setDistantPlaces([]);
-      } else if (distantResponse.data && distantResponse.data.places) {
-        setDistantPlaces(distantResponse.data.places);
-      } else {
-        setDistantPlaces([]);
-      }
-      
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching places:", err);
-      setError(err.response?.data?.error || "Unable to fetch places. Please try again later.");
-      setNearbyPlaces([]);
-      setDistantPlaces([]);
-      setLoading(false);
-    }
-  };
-
-  const handleLocationSelect = (suggestion) => {
-    const locationName = suggestion.display_name;
-    setSearchQuery(locationName);
-    setShowSuggestions(false);
-    
-    const coords = {
-      lat: parseFloat(suggestion.lat),
-      lng: parseFloat(suggestion.lon)
-    };
-    
-    setUserCoords(coords);
-    sessionStorage.setItem("location", locationName);
-    fetchPlaces(coords);
-  };
-
-  const handleLocationSearch = async (e) => {
-    e.preventDefault();
-    
-    if (!searchQuery.trim()) return;
-    
-    try {
-      setLoading(true);
-      setShowSuggestions(false); // Hide suggestions when search is initiated
-      
-      // Geocode the search query to get coordinates
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
-      );
-      
-      if (response.data && response.data.length > 0) {
-        const coords = {
-          lat: parseFloat(response.data[0].lat),
-          lng: parseFloat(response.data[0].lon)
-        };
-        setUserCoords(coords);
-        fetchPlaces(coords);
-        
-        // Save to session storage
-        sessionStorage.setItem("location", searchQuery);
-      } else {
-        setError("Location not found. Please try a different search term.");
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("Error searching location:", err);
-      setError("Error searching for location. Please try again.");
-      setLoading(false);
-    }
-  };
-
-  // Get photo URL from photo reference
-  const getPhotoUrl = (photoRef) => {
-    if (photoRef && import.meta.env.VITE_GOOGLE_PLACES_API_KEY) {
-      return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${import.meta.env.VITE_GOOGLE_PLACES_API_KEY}`;
-    }
-    return fallbackImage;
-  };
-
-  // Click handler for document to hide suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const searchBox = document.querySelector('.search-box');
-      if (searchBox && !searchBox.contains(event.target)) {
-        setShowSuggestions(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-
-  // Handle Explore button click - stores data to sessionStorage and navigates to summary page
-  const handleExploreClick = (place) => {
-    // Store trip data in sessionStorage for the summary page to use
-    sessionStorage.setItem('packageTrip', JSON.stringify({
-      origin: searchQuery, // Current location
-      destination: place.name,
-      originCoords: userCoords,
-      destinationCoords: { lat: place.lat, lng: place.lng },
-      distance: place.distance
-    }));
-    
-    // Navigate to summary page with special parameter
-    navigate('/summary/packages');
-  };
-
   return (
     <>
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
@@ -908,17 +402,7 @@ const TravelPackage = () => {
               onFocus={handleSearchInputFocus}
               ref={searchInputRef}
             />
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <button type="submit" className="search-button">
-              <FaSearch size={18} />
-            </button>
-=======
             <button type="submit" className="search-button">Search</button>
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
-            <button type="submit" className="search-button">Search</button>
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
             
             {showSuggestions && suggestions.length > 0 && (
               <div className="location-suggestions">
@@ -990,33 +474,14 @@ const TravelPackage = () => {
               {nearbyPlaces.length > 0 ? (
                 nearbyPlaces.map((place, index) => (
                   <div className="package-card" key={`nearby-${index}`}>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    <div className="card-image">
-                      <img 
-                        src={getPhotoUrl(place)} 
-                        alt={place.name}
-                        onError={(e) => {
-                          e.target.onerror = null; // Prevent infinite loop
-                          e.target.src = fallbackImage;
-                        }}
-                      />
-                    </div>
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
                     <div 
                       className="card-image" 
                       style={{ 
-                        backgroundImage: `url(${place.photoRef ? getPhotoUrl(place.photoRef) : fallbackImage})`,
+                        backgroundImage: `url(${place.photoRef ? getPhotoUrl(place) : fallbackImage})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                       }}
                     ></div>
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
             <div className="card-content">
                       <h3>{place.name}</h3>
                       <h5>{place.distance} km</h5>
@@ -1044,33 +509,14 @@ const TravelPackage = () => {
               {distantPlaces.length > 0 ? (
                 distantPlaces.map((place, index) => (
                   <div className="package-card" key={`distant-${index}`}>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    <div className="card-image">
-                      <img 
-                        src={getPhotoUrl(place)} 
-                        alt={place.name}
-                        onError={(e) => {
-                          e.target.onerror = null; // Prevent infinite loop
-                          e.target.src = fallbackImage;
-                        }}
-                      />
-                    </div>
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
                     <div 
                       className="card-image" 
                       style={{ 
-                        backgroundImage: `url(${place.photoRef ? getPhotoUrl(place.photoRef) : fallbackImage})`,
+                        backgroundImage: `url(${place.photoRef ? getPhotoUrl(place) : fallbackImage})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                       }}
                     ></div>
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
             <div className="card-content">
                       <h3>{place.name}</h3>
                       <h5>{place.distance} km</h5>

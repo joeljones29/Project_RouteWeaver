@@ -103,24 +103,10 @@ body {
 /* Update route-info container */
 .route-info {
   position: relative;
-<<<<<<< HEAD
-<<<<<<< HEAD
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  background-color: #1a1a2e;
-  width: 100%;
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 }
 
 /* Search container */
@@ -678,17 +664,8 @@ body {
 }
 
 .place-header-container h3 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  color: white;
   margin: 0;
   font-size: 18px;
-=======
-  margin: 0;
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
-  margin: 0;
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 }
 
 .back-to-routes {
@@ -708,8 +685,6 @@ body {
 .back-to-routes:hover {
   color: #0d47a1;
   transform: translateX(-2px);
-<<<<<<< HEAD
-<<<<<<< HEAD
 }
 
 /* Update to position the search button more precisely */
@@ -721,8 +696,4 @@ body {
   .search-btn {
     right: 25%;
   }
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 }

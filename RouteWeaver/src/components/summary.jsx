@@ -4,16 +4,8 @@ import { MapContainer, TileLayer, Polyline, useMap, Marker, Popup } from "react-
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../design/summary.css";
-<<<<<<< HEAD
 import { FiRefreshCw, FiX } from 'react-icons/fi';
 import { FaUserCircle, FaArrowLeft, FaMapMarkerAlt, FaRoute, FaSave, FaGoogle, FaApple } from 'react-icons/fa';
-=======
-import { FiRefreshCw } from 'react-icons/fi';
-import { FaUserCircle, FaArrowLeft } from 'react-icons/fa';
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 import axios from 'axios';
 
 // Icons for markers
@@ -168,14 +160,6 @@ export default function Summary() {
   const [isPackageRoute, setIsPackageRoute] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-<<<<<<< HEAD
-<<<<<<< HEAD
-  const [costEstimate, setCostEstimate] = useState(null);
-  const [isFetchingCost, setIsFetchingCost] = useState(false);
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
   
   // Authentication check
   useEffect(() => {
@@ -299,51 +283,6 @@ export default function Summary() {
                   } else {
                     return createFallbackPlaceCoordinates(place, index, data.destination);
                   }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-                }
-                return place;
-              }));
-              
-              console.log("Updated places with looked-up coordinates:", updatedPlaces);
-              setPlaces(updatedPlaces);
-              
-              // Generate route geometry with the updated places
-<<<<<<< HEAD
-              // If this API call fails, the route will be created with a fallback mechanism
-              // to ensure we always display something to the user
-              const routeResult = await fetchRouteGeometry(data.origin, data.destination, updatedPlaces);
-              if (routeResult) {
-                setRoute(routeResult);
-              }
-            } else {
-              // Even if no places, still create a direct route
-              const routeResult = await fetchRouteGeometry(data.origin, data.destination, []);
-              if (routeResult) {
-                setRoute(routeResult);
-              }
-            }
-          } catch (error) {
-            console.error("Error fetching route data:", error);
-            setError(`Failed to load route details, but you can still view the map with a basic route. Error: ${error.message}`);
-            
-            // Still try to get basic origin/destination data from URL params or other sources if possible
-            if (!origin && !destination && routeId) {
-              // Try to parse routeId for origin/destination if it contains this information
-              const parts = routeId.split('_');
-              if (parts.length >= 2) {
-                setOrigin(parts[0] || "Unknown Origin");
-                setDestination(parts[1] || "Unknown Destination");
-                await getCoordinatesFromAddresses(parts[0], parts[1]);
-                
-                // Create a fallback route even if we can't fetch the saved route
-                const fallbackResult = createAndReturnFallbackRoute();
-                if (fallbackResult) {
-                  setRoute(fallbackResult);
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
                 }
                 return place;
               }));
@@ -370,26 +309,6 @@ export default function Summary() {
                 setDestination(parts[1] || "Unknown Destination");
                 await getCoordinatesFromAddresses(parts[0], parts[1]);
               }
-=======
-              await fetchRouteGeometry(data.origin, data.destination, updatedPlaces);
-            } else {
-              // Even if no places, still create a direct route
-              await fetchRouteGeometry(data.origin, data.destination, []);
-            }
-          } catch (error) {
-            console.error("Error fetching route data:", error);
-            setError(`Failed to load route: ${error.message}`);
-            
-            // Still try to get basic origin/destination data from URL params or other sources if possible
-            if (!origin && !destination && routeId) {
-              // Try to parse routeId for origin/destination if it contains this information
-              const parts = routeId.split('_');
-              if (parts.length >= 2) {
-                setOrigin(parts[0] || "Unknown Origin");
-                setDestination(parts[1] || "Unknown Destination");
-                await getCoordinatesFromAddresses(parts[0], parts[1]);
-              }
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
             }
           }
         }
@@ -1745,13 +1664,6 @@ export default function Summary() {
           
           break;
           
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-          
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
         case 'apple':
           // Apple Maps URL format
           navUrl = `http://maps.apple.com/?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(destination)}`;
@@ -1799,23 +1711,6 @@ export default function Summary() {
   // Update the fetchTravelCost function to fix the API endpoint issue and implement fallback
   async function fetchTravelCost(origin, destination, places, numPeople = 2) {
     try {
-<<<<<<< HEAD
-      // Get the API URL from environment variable or use default
-        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      
-      // Filter only checked places
-      const checkedPlaces = places.filter(p => p.checked).map(p => p.name);
-      
-      console.log("Fetching cost estimate for:", {
-        origin, 
-        destination, 
-        places: checkedPlaces, 
-        numPeople
-      });
-
-      // Try using the getCost endpoint which matches the function in gemini.js
-      const response = await fetch(`${baseUrl}/api/getCost`, {
-=======
       setLoading(true);
       const checkedPlaces = places.filter(place => place.checked);
       
@@ -1847,10 +1742,6 @@ export default function Summary() {
         // Save as a new route
         const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         const response = await fetch(`${baseUrl}/saved/save`, {
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -1864,52 +1755,6 @@ export default function Summary() {
         });
         
         if (!response.ok) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-        throw new Error(`Failed to fetch cost estimate: ${response.status}`);
-        }
-        
-        const data = await response.json();
-      console.log("Cost estimate received:", data);
-      return data;
-      
-    } catch (error) {
-      console.error("Error fetching travel cost:", error);
-      
-      // Create a fallback cost estimate based on route data if it exists
-      if (route && route.distance) {
-        console.log("Creating local fallback cost estimate based on distance");
-        
-        const distanceKm = route.distance / 1000;
-        
-        // Calculate approximate costs
-        const fuelCost = Math.round(distanceKm * 8); // Approximate ₹8 per km
-        const foodCost = Math.round((distanceKm / 100) * 500); // ₹500 per 100km
-        const accommodationCost = Math.round((route.time / 3600 / 10) * 2000); // ₹2000 per 10 hours of travel
-        const attractionsCost = Math.round(checkedPlaces.length * 200); // ₹200 per attraction
-        
-        const totalCost = fuelCost + foodCost + accommodationCost + attractionsCost;
-        
-        return {
-          totalCost: `₹${totalCost}`,
-          details: {
-            fuel: `₹${fuelCost}`,
-            food: `₹${foodCost}`,
-            accommodation: `₹${accommodationCost}`,
-            attractions: `₹${attractionsCost}`
-          },
-          note: "Estimated locally based on distance and time"
-        };
-      }
-      
-      // Return a simple fallback if no route data
-      return { 
-        totalCost: "Unable to calculate",
-        error: true 
-      };
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
           const errorData = await response.text();
           console.error("Error response from server:", errorData);
           throw new Error(`Failed to save route: ${errorData}`);
@@ -1970,7 +1815,6 @@ export default function Summary() {
       alert(`Error: ${error.message}`);
     } finally {
       setLoading(false);
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
     }
   }
 
@@ -2008,42 +1852,6 @@ export default function Summary() {
     }
   }
 
-  // Handle sign out functionality
-  const handleSignOut = () => {
-    // Remove user data from localStorage and sessionStorage
-    localStorage.removeItem('userEmail');
-    sessionStorage.clear();
-    // Navigate to login page
-    navigate('/');
-  };
-  
-  // Add scroll effect for navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Handle sign out functionality
-  const handleSignOut = () => {
-    // Remove user data from localStorage and sessionStorage
-    localStorage.removeItem('userEmail');
-    sessionStorage.clear();
-    // Navigate to login page
-    navigate('/');
-  };
-  
-  // Add scroll effect for navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <div className="summary-container">
       <div className="top-bar">
@@ -2073,9 +1881,6 @@ export default function Summary() {
           <div className="route-header">
             <h3>Route Summary</h3>
           </div>
-<<<<<<< HEAD
-<<<<<<< HEAD
-          
           {loading ? (
           <div className="loading-message">
             <p>Loading route data...</p>
@@ -2131,31 +1936,9 @@ export default function Summary() {
         
         <div className="map-area">
           {loading ? (
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-          <div className="loading-message">
-            <p>Loading route data...</p>
-          </div>
-        </div>
-        <div className="map-area">
-          {/* Fallback map while loading */}
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-          <MapContainer
-            center={[20.5937, 78.9629]} // India center
-            zoom={4}
-            style={{ height: "100%", width: "100%" }}
-          >
-            <TileLayer
-              attribution='&copy; OpenStreetMap contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </MapContainer>
-<<<<<<< HEAD
-<<<<<<< HEAD
+            <div className="loading-message">
+              <p>Loading route data...</p>
+            </div>
           ) : (
             <MapContainer
               center={originCoords ? [originCoords.lat, originCoords.lng] : [20.5937, 78.9629]}
@@ -2276,12 +2059,6 @@ export default function Summary() {
             )}
           </div>
         )}
-=======
-        </div>
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
-        </div>
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
       </div>
     </div>
   );

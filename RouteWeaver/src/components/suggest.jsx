@@ -34,86 +34,10 @@ async function getGeminiPlaces(origin, destination, keyword) {
   try {
     const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     
-<<<<<<< HEAD
     const response = await axios.post(`${baseUrl}/suggest/suggestions`, {
       origin,
       destination,
       keyword
-=======
-    // Calculate total route length
-    let totalDistance = 0;
-    for (let i = 0; i < geometry.length - 1; i++) {
-      totalDistance += calculateDistance(
-        geometry[i][1], geometry[i][0],
-        geometry[i+1][1], geometry[i+1][0]
-      );
-    }
-    
-    console.log(`Total route distance: ${(totalDistance/1000).toFixed(1)}km`);
-    
-    // Adjust sampling strategy based on route length
-    // For longer routes, sample more points and space them more evenly
-    const routeLengthKm = totalDistance / 1000;
-    
-    // Get strategic points along the route - start, middle segments, and end
-    // For longer routes, sample more points
-    const numSamplePoints = routeLengthKm > 250 ? 7 : 
-                           routeLengthKm > 150 ? 5 : 
-                           routeLengthKm > 50 ? 4 : 3;
-    
-    console.log(`Using ${numSamplePoints} sampling points for ${routeLengthKm.toFixed(1)}km route`);
-    
-    // Create evenly distributed points along the route
-    const sampledPoints = [];
-    
-    // Calculate segment length
-    const segmentLength = (geometry.length - 1) / (numSamplePoints - 1);
-    
-    // Sample points at even intervals
-    for (let i = 0; i < numSamplePoints; i++) {
-      // Calculate index
-      const index = Math.min(Math.round(i * segmentLength), geometry.length - 1);
-      sampledPoints.push(geometry[index]);
-    }
-    
-    console.log(`Sampling ${sampledPoints.length} evenly spaced points along the route`);
-    
-    // Generate a random offset for each request to get different places
-    const randomOffset = Math.floor(Math.random() * 1000);
-    
-    // Default tourist keywords if none provided
-    const defaultKeywords = [
-      'tourist_attraction',
-      'natural_feature',
-      'museum',
-      'historic_site',
-      'landmark',
-      'park',
-      'point_of_interest'
-    ];
-    
-    // Use provided keywords or fall back to defaults
-    const searchKeywords = keywords.length > 0 ? keywords : defaultKeywords;
-    console.log('Using search keywords:', searchKeywords);
-    
-    // Add delay between requests to avoid rate limiting
-    const placesPromises = sampledPoints.map(async ([lon, lat], index) => {
-      // Add a small delay between requests
-      if (index > 0) {
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
-      
-      try {
-        console.log(`Fetching places at point ${index + 1}/${sampledPoints.length}: [${lat}, ${lon}]`);
-        const response = await fetch(`http://localhost:5000/api/landmarks/places?lat=${lat}&lng=${lon}&keywords=${searchKeywords.join(',')}&offset=${randomOffset + index}`);
-        const data = await response.json();
-        console.log(`Places found at point ${index + 1}/${sampledPoints.length}: ${data.results?.length || 0}`);
-        return data.results || [];
-      } catch (err) {
-        console.error(`Error fetching places at point ${index + 1}/${sampledPoints.length}:`, err);
-        return [];
-      }
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
     });
     
     if (!response.data || !response.data.success) {
@@ -148,7 +72,7 @@ async function getGeminiPlaces(origin, destination, keyword) {
     }));
     
     return [...set1, ...set2];
-      } catch (error) {
+  } catch (error) {
     console.error('Error fetching Gemini places:', error);
     return [];
   }
@@ -180,30 +104,33 @@ async function getOSRMRoute(origin, destination, waypoints = []) {
     
     const route = response.data.route;
     
+    // Calculate total route length
+    let totalDistance = 0;
+    for (let i = 0; i < route.geometry.length - 1; i++) {
+      totalDistance += calculateDistance(
+        route.geometry[i][1],
+        route.geometry[i][0],
+        route.geometry[i+1][1],
+        route.geometry[i+1][0]
+      );
+    }
+    
+    console.log(`Total route distance: ${(totalDistance/1000).toFixed(1)}km`);
+    
     // Process OSRM response to match expected format
     if (route && route.routes && route.routes.length > 0) {
       const routeData = route.routes[0];
       
-<<<<<<< HEAD
       return {
         distance: routeData.distance,
         timeTaken: routeData.duration,
         geometry: routeData.geometry.coordinates,
-        // Additional route information
         legs: routeData.legs || [],
         name: 'OSRM Route'
       };
-=======
-      const dist = calculateDistance(lat, lon, routeLat, routeLon);
-      
-      if (dist < minDist) {
-        minDist = dist;
-        closestPointIndex = i;
-      }
     }
     
-    // Return position as percentage along route
-    return closestPointIndex / Math.max(1, routeGeometry.length - 1);
+    throw new Error('No route found in OSRM response');
   } catch (error) {
     console.error("Error in findPositionAlongRoute:", error);
     return 0.5; // Default to middle
@@ -329,7 +256,7 @@ function distanceToLineSegment(px, py, x1, y1, x2, y2) {
     } else if (param > 1) {
       xx = x2;
       yy = y2;
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
+
     } else {
       throw new Error('No route found in OSRM response');
     }
@@ -356,7 +283,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c; // distance in meters
 }
 
-<<<<<<< HEAD
 // --------------------- Custom Icon for Hovered Place Marker ---------------------
 const hoveredIcon = new L.Icon({
   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png",
@@ -376,7 +302,7 @@ const defaultIcon = new L.Icon({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
   shadowSize: [41, 41]
 });
-=======
+
 // --------------------- BASE ROUTES VIA BACKEND (Google Maps API) ---------------------
 // Fetch multiple routes (time/distance info from Google Maps API) from your backend.
 async function fetchBaseRoutes(origin, destination) {
@@ -456,7 +382,6 @@ async function fetchRouteWithPlaces(origin, destination, selectedPlaces) {
     throw error;
   }
 }
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 
 // --------------------- OSRM Map Utilities (for displaying route geometry) ---------------------
 function RoutePolylines({ routes, selectedIndex }) {
@@ -530,6 +455,12 @@ export default function SuggestPage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true);
+  const [isLoadingRoute, setIsLoadingRoute] = useState(true);
+  const [baseRoutes, setBaseRoutes] = useState([]);
+  const [selectedBaseIndex, setSelectedBaseIndex] = useState(null);
+  const [viaRoute, setViaRoute] = useState(null);
+  const [costEstimate, setCostEstimate] = useState(null);
+  const [isFetchingCost, setIsFetchingCost] = useState(false);
 
   // Handle sign out functionality
   const handleSignOut = () => {
@@ -552,8 +483,7 @@ export default function SuggestPage() {
   // Read origin, destination, keywords from sessionStorage
   const originStr = sessionStorage.getItem("location") || "Kochi, Kerala";
   const destinationStr = sessionStorage.getItem("destination") || "Thiruvananthapuram, Kerala";
-<<<<<<< HEAD
-=======
+
   const selectedKeywords = useMemo(() => {
     const raw = sessionStorage.getItem("selectedKeywords");
     if (!raw) {
@@ -591,7 +521,6 @@ export default function SuggestPage() {
       ];
     }
   }, []);
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 
   const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   
@@ -621,35 +550,46 @@ export default function SuggestPage() {
   // 2) Once coordinates are available, fetch the direct route
   useEffect(() => {
     if (!originCoords || !destCoords) return;
-<<<<<<< HEAD
-    
+
+    let isMounted = true;
+
     async function fetchInitialRoute() {
+      if (!isMounted) return;
+      
       setIsLoadingRoute(true);
+      setIsLoadingRoutes(true);
+      
       try {
         // Get direct route between origin and destination
         const route = await getOSRMRoute(originCoords, destCoords);
-        setCurrentRoute(route);
-        
-        // Now fetch places using Gemini
-=======
-    (async () => {
-      setIsLoadingRoutes(true);
-      try {
-        const routes = await fetchBaseRoutes(originCoords, destCoords);
-        setBaseRoutes(routes);
-        // Make sure we explicitly set to null to prevent automatic selection
-        setSelectedBaseIndex(null);
-        // Clear any existing places and via route
-        setPlaces([]);
-        setViaRoute(null);
-        // Reset fetch tracker
-        setFetchedForIndex(null);
+        if (isMounted) {
+          setCurrentRoute(route);
+          
+          // Fetch base routes
+          const routes = await fetchBaseRoutes(originCoords, destCoords);
+          setBaseRoutes(routes);
+          setSelectedBaseIndex(null);
+          setPlaces([]);
+          setViaRoute(null);
+          setFetchedForIndex(null);
+        }
       } catch (err) {
-        console.error("Error fetching base routes:", err);
+        if (isMounted) {
+          console.error("Error in fetchInitialRoute:", err);
+        }
       } finally {
-        setIsLoadingRoutes(false);
+        if (isMounted) {
+          setIsLoadingRoute(false);
+          setIsLoadingRoutes(false);
+        }
       }
-    })();
+    }
+
+    fetchInitialRoute();
+
+    return () => {
+      isMounted = false;
+    };
   }, [originCoords, destCoords]);
 
   // 3) When a base route is selected, fetch places for that route's geometry.
@@ -659,21 +599,22 @@ export default function SuggestPage() {
     if (fetchedForIndex === selectedBaseIndex) return; // already fetched for this route
     const chosen = baseRoutes[selectedBaseIndex];
     if (!chosen || !chosen.geometry) return;
-    (async () => {
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
+    
+    const fetchPlaces = async () => {
       setLoadingPlaces(true);
-        const geminiPlaces = await getGeminiPlaces(originStr, destinationStr, keyword);
+      try {
+        const geminiPlaces = await getGeminiPlaces(originStr, destinationStr, selectedKeywords);
         setPlaces(geminiPlaces);
+        setFetchedForIndex(selectedBaseIndex);
       } catch (err) {
-        console.error("Error fetching initial route or places:", err);
+        console.error("Error fetching places:", err);
       } finally {
-        setIsLoadingRoute(false);
         setLoadingPlaces(false);
       }
-    }
-
-    fetchInitialRoute();
-  }, [originCoords, destCoords, originStr, destinationStr, keyword]);
+    };
+    
+    fetchPlaces();
+  }, [selectedBaseIndex, baseRoutes, originStr, destinationStr, selectedKeywords, fetchedForIndex]);
 
   // 3) When places are toggled, update the route
   useEffect(() => {
@@ -712,7 +653,6 @@ export default function SuggestPage() {
     updateRouteWithSelectedPlaces();
   }, [places, originCoords, destCoords]);
 
-<<<<<<< HEAD
   // Helper function to sort places by distance from origin
   function sortPlacesByDistanceFromOrigin(places, originCoords) {
     if (!places || !places.length || !originCoords) return places;
@@ -726,7 +666,14 @@ export default function SuggestPage() {
         place.lon
       );
       return { ...place, distanceFromOrigin: distance };
-=======
+    });
+    
+    // Sort places by distance from origin
+    placesWithDistances.sort((a, b) => a.distanceFromOrigin - b.distanceFromOrigin);
+    
+    return placesWithDistances;
+  }
+
   // Handler for selecting a base route (phase 1 -> phase 2)
   function handleBaseRouteSelect(idx) {
     console.log(`Selecting route ${idx}`);
@@ -950,6 +897,33 @@ export default function SuggestPage() {
     navigate('/queries');
   };
 
+  // Helper function to get place image URL
+  function getPlaceImageUrl(place) {
+    if (place.imageUrl) return place.imageUrl;
+    if (place.photoRef) {
+      return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photoRef}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`;
+    }
+    return fallbackImg;
+  }
+
+  // Helper function to fetch travel cost
+  async function fetchTravelCost(origin, destination, places, numPeople) {
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await axios.post(`${baseUrl}/travel/cost`, {
+        origin,
+        destination,
+        places: places.map(p => p.name),
+        numPeople
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching travel cost:", error);
+      return { error: "Failed to estimate cost", totalCost: "Unknown" };
+    }
+  }
+
   return (
     <div className="suggest-container">
       <nav className="navbar">
@@ -1076,6 +1050,7 @@ export default function SuggestPage() {
         </div>
         <div className="map-area">
           {originCoords && destCoords && (
+            currentRoute ? (
               <MapContainer
                 center={[originCoords.lat, originCoords.lon]}
                 zoom={7}
@@ -1085,35 +1060,32 @@ export default function SuggestPage() {
                   attribution='&copy; OpenStreetMap contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-              {currentRoute && (
-                <RoutePolylines routes={[currentRoute]} selectedIndex={0} />
-              )}
+                {currentRoute && (
+                  <RoutePolylines routes={[currentRoute]} selectedIndex={0} />
+                )}
                 {originCoords && <Marker position={[originCoords.lat, originCoords.lon]} />}
-<<<<<<< HEAD
-=======
                 {destCoords && <Marker position={[destCoords.lat, destCoords.lon]} />}
                 {hoveredPlace && (
                   <Marker position={[hoveredPlace.lat, hoveredPlace.lon]} icon={hoveredIcon} />
                 )}
               </MapContainer>
             ) : (
-              // Phase 2: Single route (viaRoute)
-                <MapContainer
-                  center={[originCoords.lat, originCoords.lon]}
-                  zoom={7}
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <TileLayer
-                    attribution='&copy; OpenStreetMap contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
+              <MapContainer
+                center={[originCoords.lat, originCoords.lon]}
+                zoom={7}
+                style={{ height: "100%", width: "100%" }}
+              >
+                <TileLayer
+                  attribution='&copy; OpenStreetMap contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
                 {viaRoute ? (
                   <RoutePolylines routes={[viaRoute]} selectedIndex={0} />
                 ) : baseRoutes[selectedBaseIndex] ? (
                   <RoutePolylines routes={[baseRoutes[selectedBaseIndex]]} selectedIndex={0} />
                 ) : null}
-                  <Marker position={[originCoords.lat, originCoords.lon]} />
-                  {destCoords && <Marker position={[destCoords.lat, destCoords.lon]} />}
+                <Marker position={[originCoords.lat, originCoords.lon]} />
+                {destCoords && <Marker position={[destCoords.lat, destCoords.lon]} />}
                 {places.filter(p => p.checked).map((place, idx) => (
                   <Marker 
                     key={`place-marker-${idx}`}
@@ -1122,20 +1094,19 @@ export default function SuggestPage() {
                   />
                 ))}
                 {hoveredPlace && !places.find(p => p.id === hoveredPlace.id && p.checked) && (
-                    <Marker position={[hoveredPlace.lat, hoveredPlace.lon]} icon={hoveredIcon} />
-                  )}
-                </MapContainer>
+                  <Marker position={[hoveredPlace.lat, hoveredPlace.lon]} icon={hoveredIcon} />
+                )}
+              </MapContainer>
             )
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
           )}
           {hoveredPlace && (
             <div className="hoverbox">
               <div className="hoverbox-image-container">
-                  <img
+                <img
                   src={getPlaceImageUrl(hoveredPlace)}
-                    alt={hoveredPlace.name}
-                    onError={e => { e.currentTarget.src = fallbackImg; }}
-                  />
+                  alt={hoveredPlace.name}
+                  onError={e => { e.currentTarget.src = fallbackImg; }}
+                />
               </div>
               <div className="hoverbox-info">
                 <p className="hoverbox-name">{hoveredPlace.name}</p>
@@ -1179,8 +1150,6 @@ export default function SuggestPage() {
     </div>
   );
 }
-<<<<<<< HEAD
-=======
 
 // Navigation Box Component
 function NavBox({ buildGoogleMapsUrl, buildAppleMapsUrl, handleOptionClick }) {
@@ -1202,4 +1171,3 @@ function NavBox({ buildGoogleMapsUrl, buildAppleMapsUrl, handleOptionClick }) {
     </div>
   );
 }
-/*⬆️ exactly 1000 lines of code */

@@ -160,18 +160,8 @@ body {
 
 .search-box {
   position: relative;
-<<<<<<< HEAD
-<<<<<<< HEAD
-  display: flex;
-  align-items: center;
-=======
   flex: 1;
   display: flex;
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
-  flex: 1;
-  display: flex;
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 }
 
 .search-input {
@@ -356,30 +346,8 @@ body {
 }
 
 /* Add styles for search button and error message */
-<<<<<<< HEAD
-<<<<<<< HEAD
 .search-button:hover {
-  background-color: #333;
-=======
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-.search-button {
   background-color: #da9e48;
-  color: white;
-  border: none;
-  border-radius: 0 4px 4px 0;
-  padding: 0 15px;
-  cursor: pointer;
-  height: 100%;
-  transition: background-color 0.3s;
-}
-
-.search-button:hover {
-  background-color: #c58c3a;
-<<<<<<< HEAD
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
-=======
->>>>>>> d95ddac7679eb0b1a4f37803f37e82dcef16ac3f
 }
 
 .error-message {
