@@ -1,2 +1,2 @@
 # Project_RouteWeaver
- An intelligent and scalable 
+ An Intelligent, Scalable, and Personalized Itinerary Manager
