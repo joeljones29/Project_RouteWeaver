@@ -40,43 +40,43 @@ It allows users to:
 
 ### 🏠 Home Page
 The entry point showcasing RouteWeaver’s minimal and elegant design.
-![Home Page](home.jpg)
+![Home Page](images/home.jpg)
 
 ---
 
 ### 🔐 Login / Signup
 Secure authentication and user access.
-![Login Page](login.jpg)
+![Login Page](images/login.jpg)
 
 ---
 
 ### 🗺️ Query Page
 Generate custom routes based on your interests, start/destination, and trip preferences.
-![Query Page](querypage.jpg)
+![Query Page](images/querypage.jpg)
 
 ---
 
 ### 💾 Saved Routes
 Access your previously planned or completed journeys.
-![Saved Routes](savedroutes.jpg)
+![Saved Routes](images/savedroutes.jpg)
 
 ---
 
 ### 🌴 SmartVacay
 AI-driven vacation planner that syncs with your calendar to suggest travel windows.
-![SmartVacay](smartvacay.jpg)
+![SmartVacay](images/smartvacay.jpg)
 
 ---
 
 ### 💡 Suggestions Page
 Get intelligent recommendations for places to visit based on interest keywords.
-![Suggestions Page](suggestion.jpg)
+![Suggestions Page](images/suggestion.jpg)
 
 ---
 
 ### ✈️ Travel Packages
 Explore pre-built optimized travel packages near your current location.
-![Travel Packages](travelpackages.jpg)
+![Travel Packages](images/travelpackages.jpg)
 
 ---
 
