@@ -84,10 +84,15 @@ Explore pre-built optimized travel packages near your current location.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/routeweaver.git
+git clone https://github.com/joeljones29/Project_RouteWeaver
+
+#Start the backend services
+cd Backend
+npm install
+npm start
 
 # Navigate into the project directory
-cd routeweaver
+cd RouteWeaver
 
 # Install dependencies
 npm install
